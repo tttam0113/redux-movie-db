@@ -6,6 +6,7 @@ import {
     LOAD_MORE_MOVIES,
     CLEAR_MOVIES,
     setMovies,
+    setPopularPersistedState,
     clearMovies,
     setMoreMovies
 } from '../../actions/movies';
@@ -26,18 +27,23 @@ const moviesMiddleware = () => next => action => {
 
     switch (action.type) {
         case CLEAR_MOVIES:
-            next(setMovies({}));
+            next(setMovies({ data: { movies: [] } }));
             break;
         case FETCH_POPULAR_MOVIES: {
-            next([
-                clearMovies(),
-                apiRequest({
-                    method: 'GET',
-                    url: buildPopularUrl(action.payload.page),
-                    feature: MOVIES
-                }),
-                setLoader({ state: true, feature: MOVIES })
-            ]);
+            if (sessionStorage.getItem('HomeState')) {
+                const home = JSON.parse(sessionStorage.getItem('HomeState'));
+                next(setPopularPersistedState(home));
+            } else {
+                next([
+                    clearMovies(),
+                    apiRequest({
+                        method: 'GET',
+                        url: buildPopularUrl(action.payload.page),
+                        feature: MOVIES
+                    }),
+                    setLoader({ state: true, feature: MOVIES })
+                ]);
+            }
             break;
         }
         case LOAD_MORE_MOVIES: {

@@ -1,5 +1,5 @@
 export const MOVIES = '[Movies]';
-export const MORE_MOVIES = '[MoreMovies]'
+export const MORE_MOVIES = '[MoreMovies]';
 
 export const FETCH_POPULAR_MOVIES = `${MOVIES} FETCH_POPULAR_MOVIES`; // Command action
 export const SEARCH_MOVIES = `${MOVIES} SEARCH_MOVIES`; // Command action
@@ -8,6 +8,7 @@ export const CLEAR_MOVIES = `${MOVIES} CLEAR_MOVIES`; // Command action
 
 export const SET_MOVIES = `${MOVIES} SET_MOVIES`; // document action
 export const SET_MORE_MOVIES = `${MORE_MOVIES} SET_MORE_MOVIES`; // document action
+export const SET_POPULAR_PERSISTED_STATE = `${MOVIES} SET_POPULAR_PERSISTED_STATE`;
 
 // action creator
 export const fetchPopularMovies = ({ page = 1 }) => ({
@@ -44,4 +45,9 @@ export const setMoreMovies = ({ data }) => ({
     type: SET_MORE_MOVIES,
     payload: data,
     meta: { feature: MORE_MOVIES }
+});
+
+export const setPopularPersistedState = homeState => ({
+    type: SET_POPULAR_PERSISTED_STATE,
+    payload: homeState
 });

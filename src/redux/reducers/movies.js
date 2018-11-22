@@ -1,4 +1,8 @@
-import { SET_MOVIES, SET_MORE_MOVIES } from '../actions/movies';
+import {
+    SET_MOVIES,
+    SET_MORE_MOVIES,
+    SET_POPULAR_PERSISTED_STATE
+} from '../actions/movies';
 
 const inititalState = {
     movies: [],
@@ -10,8 +14,18 @@ const inititalState = {
 
 export default (state = inititalState, action) => {
     switch (action.type) {
+        case SET_POPULAR_PERSISTED_STATE:
+            return {
+                ...state,
+                ...action.payload
+            };
         case SET_MOVIES: {
-            const { page, total_pages, results, searchTerm = '' } = action.payload;
+            const {
+                page,
+                total_pages,
+                results,
+                searchTerm = ''
+            } = action.payload;
             return {
                 ...state,
                 movies: results,
