@@ -1,48 +1,45 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import {
-    getPopularMovies,
-    showLoadingSpinner,
+    fetchPopularMovies,
     searchMovies,
-    clearMovies,
-    loadMoreMovies,
-    setPopularPersistedState
-} from '../actions';
+    loadMoreMovies
+    // setPopularPersistedState
+} from '../redux/actions/movies';
+
 import Home from '../components/Home/Home';
+
+import * as homeSelectors from '../redux/selectors/homeSelectors';
 
 class HomeContainer extends Component {
     componentDidMount() {
-        if (sessionStorage.getItem('HomeState')) {
-            const home = JSON.parse(sessionStorage.getItem('HomeState'));
-            this.props.setPopularPersistedState(home);
-        } else {
-            this.getMovies();
-        }
+        // if (sessionStorage.getItem('HomeState')) {
+        // const home = JSON.parse(sessionStorage.getItem('HomeState'));
+        // this.props.setPopularPersistedState(home);
+        // } else {
+        this.getMovies();
+        // }
     }
 
     componentDidUpdate() {
-        if (this.props.movies.length > 0) {
-            if (this.props.searchTerm === '') {
-                sessionStorage.setItem('HomeState', JSON.stringify(this.props));
-            }
-        }
+        // if (this.props.movies.length > 0) {
+        //     if (this.props.searchTerm === '') {
+        //         sessionStorage.setItem('HomeState', JSON.stringify(this.props));
+        //     }
+        // }
     }
 
     getMovies = () => {
-        this.props.showLoadingSpinner();
-        this.props.getPopularMovies();
+        this.props.fetchPopularMovies({});
     };
 
     searchMovies = searchTerm => {
-        this.props.clearMovies();
-        this.props.showLoadingSpinner();
-        this.props.searchMovies(searchTerm);
+        this.props.searchMovies({ searchTerm });
     };
 
     loadMoreMovies = () => {
         const { searchTerm, currentPage } = this.props;
-        this.props.showLoadingSpinner();
-        this.props.loadMoreMovies(searchTerm, currentPage);
+        this.props.loadMoreMovies({ searchTerm, currentPage });
     };
 
     render() {
@@ -56,14 +53,17 @@ class HomeContainer extends Component {
     }
 }
 
-const mapStateToProps = state => state.home;
+const mapStateToProps = state => ({
+    ...homeSelectors.getHomeState(state),
+    heroImage: homeSelectors.getHeroImage(state),
+    loading: homeSelectors.getLoading(state)
+});
+
 const mapDispatchToProps = {
-    getPopularMovies,
-    showLoadingSpinner,
+    fetchPopularMovies,
     searchMovies,
-    clearMovies,
-    loadMoreMovies,
-    setPopularPersistedState
+    loadMoreMovies
+    // setPopularPersistedState
 };
 
 export default connect(

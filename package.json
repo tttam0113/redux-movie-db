@@ -10,10 +10,10 @@
     "react-router-dom": "^4.3.1",
     "react-scripts": "2.0.4",
     "redux": "^4.0.1",
-    "redux-promise": "^0.6.0"
+    "reselect": "^4.0.0"
   },
   "scripts": {
-    "start": "react-scripts start",
+    "start": "REACT_APP_ENV=development react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test --env=jsdom",
     "eject": "react-scripts eject"
@@ -25,6 +25,7 @@
     "not op_mini all"
   ],
   "devDependencies": {
+    "deep-diff": "^1.0.2",
     "enzyme": "^3.7.0",
     "enzyme-adapter-react-16": "^1.7.0"
   }
