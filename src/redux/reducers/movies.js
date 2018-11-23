@@ -28,7 +28,7 @@ export default (state = inititalState, action) => {
             } = action.payload;
             return {
                 ...state,
-                movies: results,
+                movies: results || [],
                 currentPage: page,
                 totalPages: total_pages,
                 searchTerm: searchTerm

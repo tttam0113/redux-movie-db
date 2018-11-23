@@ -27,7 +27,7 @@ const moviesMiddleware = ({ dispatch }) => next => action => {
 
     switch (action.type) {
         case CLEAR_MOVIES:
-            next(setMovies({ data: { movies: [] } }));
+            next(setMovies({ data: { results: [] } }));
             break;
         case FETCH_POPULAR_MOVIES: {
             if (sessionStorage.getItem('HomeState')) {
