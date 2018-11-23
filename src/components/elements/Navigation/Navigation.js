@@ -4,19 +4,19 @@ import PropTypes from 'prop-types';
 import './Navigation.css';
 
 const Navigation = ({ movie }) => (
-  <div className="rmdb-navigation">
-    <div className="rmdb-navigation-content">
-      <Link to="/">
-        <p>Home</p>
-      </Link>
-      <p>/</p>
-      <p>{movie}</p>
+    <div className="rmdb-navigation">
+        <div className="rmdb-navigation-content">
+            <Link to="/">
+                <p>Home</p>
+            </Link>
+            <p>/</p>
+            <p>{movie}</p>
+        </div>
     </div>
-  </div>
-)
+);
 
 Navigation.propTypes = {
-  movie: PropTypes.string
-}
+    movie: PropTypes.string
+};
 
 export default Navigation;

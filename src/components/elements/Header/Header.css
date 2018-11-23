@@ -22,10 +22,24 @@
   float: left;
 }
 
+.rmdb-references {
+  display: flex;
+  float: right;
+  align-items: center;
+}
+
 .rmdb-tmdb-logo {
   width: 122px;
   margin-top: 25px;
   float: right;
+}
+
+.rmdb-fa-github {
+  margin-top: 25px;
+  height: 48px;
+  width: 48px;
+  margin-right: 12px;
+  color: white;
 }
 
 @media screen and (max-width: 500px) {
@@ -36,7 +50,7 @@
 
   .rmdb-tmdb-logo {
     display: inline-block;
-    width:80px;
+    width: 80px;
     margin-top: 0px;
   }
 

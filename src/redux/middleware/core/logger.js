@@ -44,12 +44,12 @@ const logDiff = (prevState, newState, isCollapsed) => {
 
     try {
         if (isCollapsed) {
-            console.groupCollapsed('diff');
+            console.groupCollapsed('Diff');
         } else {
-            console.group('diff');
+            console.group('Diff');
         }
     } catch (e) {
-        console.log('diff');
+        console.log('Diff');
     }
 
     if (diff) {
@@ -79,30 +79,36 @@ const loggerMiddleware = ({ getState }) => next => action => {
     // error: () => '#F20404',
 
     const { REACT_APP_ENV } = process.env;
+    const isCollapsed = true;
 
     if (!REACT_APP_ENV || REACT_APP_ENV === 'development') {
-        console.group(`${action.type}`);
+        try {
+            if (isCollapsed) {
+                console.groupCollapsed(`${action.type}`);
+            } else {
+                console.group(`${action.type}`);
+            }
+        } catch (e) {
+            console.log(`${action.type}`);
+        }
 
         const prevState = getState();
-
-        // console.group('CURRENT STATE:');
         console.log('%c CURRENT STATE', 'color: #9E9E9E; font-weight: bold;', prevState );
-        // console.groupEnd();
 
-        // console.group('ACTION:');
         console.log('%c ACTION       ', 'color: #03A9F4; font-weight: bold;', action);
-        // console.groupEnd();
 
         next(action);
 
-        // console.group('NEXT STATE: ');
         const nextState = getState();
         console.log('%c NEXT STATE   ', 'color: #4CAF50; font-weight: bold;', nextState);
-        // console.groupEnd();
 
         logDiff(prevState, nextState, true);
 
-        console.groupEnd();
+        try {
+            console.groupEnd();
+        } catch (e) {
+            console.log(`-- ${action.type} End --`)
+        }
     } else {
         next(action);
     }

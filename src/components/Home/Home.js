@@ -19,8 +19,8 @@ const Home = ({
     loadMoreMovies
 }) => (
     <div className="rmdb-home">
-        {heroImage ? (
-            <div>
+        <div>
+            {heroImage ? (
                 <HeroImage
                     image={`${IMAGE_BASE_URL}${BACKDROP_SIZE}${
                         heroImage.backdrop_path
@@ -28,9 +28,10 @@ const Home = ({
                     title={heroImage.original_title}
                     text={heroImage.overview}
                 />
-                <SearchBar callback={searchMovies} />
-            </div>
-        ) : null}
+            ) : null}
+            <SearchBar callback={searchMovies} />
+        </div>
+
         <div className="rmdb-home-grid">
             {!movies ? null : (
                 <FourColGrid
