@@ -1,0 +1,22 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`should render Actor correctly 1`] = `
+<div
+  className="rmdb-actor"
+>
+  <img
+    alt="actorthumb"
+    src="https://image.tmdb.org/t/p/w154/feD4iQF7dug3oZDLYZgXBscJ1gM.jpg"
+  />
+  <span
+    className="rmdb-actor-name"
+  >
+    Actor Name
+  </span>
+  <span
+    className="rmdb-actor-character"
+  >
+    Charactor Name
+  </span>
+</div>
+`;

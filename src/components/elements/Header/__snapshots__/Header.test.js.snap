@@ -1,0 +1,42 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`should render Header correctly 1`] = `
+<div
+  className="rmdb-header"
+>
+  <div
+    className="rmdb-header-content"
+  >
+    <Link
+      replace={false}
+      to="/"
+    >
+      <img
+        alt="rmdb-logo"
+        className="rmdb-logo"
+        src="/images/reactMovie_logo.png"
+      />
+    </Link>
+    <div
+      className="rmdb-references"
+    >
+      <a
+        className="rmdb-fa-github"
+        href="https://github.com/tttam0113/react-movie-db"
+        rel="noopener noreferrer"
+        target="_blank"
+      >
+        <FontAwesome
+          name="github"
+          size="3x"
+        />
+      </a>
+      <img
+        alt="tmdb-logo"
+        className="rmdb-tmdb-logo"
+        src="/images/tmdb_logo.png"
+      />
+    </div>
+  </div>
+</div>
+`;
