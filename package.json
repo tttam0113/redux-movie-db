@@ -14,7 +14,6 @@
     "reselect": "^4.0.0"
   },
   "scripts": {
-    "start-dev": "REACT_APP_ENV=development react-scripts start",
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test --env=jsdom",

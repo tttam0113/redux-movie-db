@@ -71,17 +71,10 @@ const logDiff = (prevState, newState, isCollapsed) => {
 };
 
 const loggerMiddleware = ({ getState }) => next => action => {
-    // console.log(process.env);
-
-    // prevState: () => '#9E9E9E',
-    // action: () => '#03A9F4',
-    // nextState: () => '#4CAF50',
-    // error: () => '#F20404',
-
-    const { REACT_APP_ENV } = process.env;
+    const { NODE_ENV } = process.env;
     const isCollapsed = true;
 
-    if (!REACT_APP_ENV || REACT_APP_ENV === 'development') {
+    if (NODE_ENV === 'development') {
         try {
             if (isCollapsed) {
                 console.groupCollapsed(`${action.type}`);
@@ -93,21 +86,33 @@ const loggerMiddleware = ({ getState }) => next => action => {
         }
 
         const prevState = getState();
-        console.log('%c CURRENT STATE', 'color: #9E9E9E; font-weight: bold;', prevState );
+        console.log(
+            '%c CURRENT STATE',
+            'color: #9E9E9E; font-weight: bold;',
+            prevState
+        );
 
-        console.log('%c ACTION       ', 'color: #03A9F4; font-weight: bold;', action);
+        console.log(
+            '%c ACTION       ',
+            'color: #03A9F4; font-weight: bold;',
+            action
+        );
 
         next(action);
 
         const nextState = getState();
-        console.log('%c NEXT STATE   ', 'color: #4CAF50; font-weight: bold;', nextState);
+        console.log(
+            '%c NEXT STATE   ',
+            'color: #4CAF50; font-weight: bold;',
+            nextState
+        );
 
         logDiff(prevState, nextState, true);
 
         try {
             console.groupEnd();
         } catch (e) {
-            console.log(`-- ${action.type} End --`)
+            console.log(`-- ${action.type} End --`);
         }
     } else {
         next(action);
