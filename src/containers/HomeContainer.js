@@ -8,7 +8,8 @@ import {
 
 import Home from '../components/Home/Home';
 
-import * as homeSelectors from '../redux/selectors/homeSelectors';
+import { getHomeState, getHeroImage } from '../redux/selectors/homeSelectors';
+import { getLoading } from '../redux/selectors/uiSelectors';
 
 class HomeContainer extends Component {
     componentDidMount() {
@@ -48,9 +49,9 @@ class HomeContainer extends Component {
 }
 
 const mapStateToProps = state => ({
-    ...homeSelectors.getHomeState(state),
-    heroImage: homeSelectors.getHeroImage(state),
-    loading: homeSelectors.getLoading(state)
+    ...getHomeState(state),
+    heroImage: getHeroImage(state),
+    loading: getLoading(state)
 });
 
 const mapDispatchToProps = {

@@ -5,16 +5,24 @@ import apiMiddleware from './middleware/core/api';
 import loggerMiddleware from './middleware/core/logger';
 
 import moviesMiddleware from './middleware/features/movies';
+import movieMiddleware from './middleware/features/movie';
+import creditsMiddleware from './middleware/features/credits';
 
 import uiReducer from './reducers/ui';
 import homeReducer from './reducers/movies';
+import movieReducer from './reducers/movie';
 
 const rootReducer = combineReducers({
-    home: homeReducer, 
+    home: homeReducer,
+    movie: movieReducer,
     ui: uiReducer
 });
 
-const featureMiddleware = [ moviesMiddleware ];
+const featureMiddleware = [
+    moviesMiddleware,
+    movieMiddleware,
+    creditsMiddleware
+];
 
 const coreMiddleware = [
     actionSplitterMiddleware,

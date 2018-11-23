@@ -1,41 +1,32 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-// import {
-//     getMovie,
-//     showLoadingSpinner,
-//     clearMovie,
-//     setMoviePersistedState,
-// } from '../actions';
+import { fetchMovie } from '../redux/actions/movie';
 
 import Movie from '../components/Movie/Movie';
 
+import { getMovieState } from '../redux/selectors/movieSelectors';
+import { getLoading } from '../redux/selectors/uiSelectors';
+
 class MovieContainer extends Component {
     componentDidMount() {
-        // const { movieId } = this.props.match.params;
-        // if (sessionStorage.getItem(`${movieId}`)) {
-        //     const movie = JSON.parse(sessionStorage.getItem(`${movieId}`));
-        //     this.props.setMoviePersistedState(movie);
-        // } else {
-        //     this.getMovie(movieId);
-        // }
+        const { movieId } = this.props.match.params;
+        this.getMovie(movieId);
     }
 
     componentDidUpdate() {
-        // const { movieId } = this.props.match.params;
-        // const { movie, actors, directors } = this.props;
-        // if (this.props.movie) {
-        //     const persistedMovieState = { movie, actors, directors };
-        //     sessionStorage.setItem(
-        //         `${movieId}`,
-        //         JSON.stringify(persistedMovieState)
-        //     );
-        // }
+        const { movieId } = this.props.match.params;
+        const { movie, actors, directors } = this.props;
+        if (this.props.movie) {
+            const persistedMovieState = { movie, actors, directors };
+            sessionStorage.setItem(
+                `${movieId}`,
+                JSON.stringify(persistedMovieState)
+            );
+        }
     }
 
     getMovie = movieId => {
-        // this.props.clearMovie();
-        // this.props.showLoadingSpinner();
-        // this.props.getMovie(movieId);
+        this.props.fetchMovie({ movieId });
     };
 
     render() {
@@ -50,14 +41,12 @@ class MovieContainer extends Component {
     }
 }
 
-const mapStateToProps = state => state.movie;
-const mapDispatchToProps = {
-    // getMovie,
-    // clearMovie,
-    // showLoadingSpinner,
-    // setMoviePersistedState
-};
+const mapStateToProps = state => ({
+    ...getMovieState(state),
+    loading: getLoading(state)
+});
+
 export default connect(
     mapStateToProps,
-    mapDispatchToProps
+    { fetchMovie }
 )(MovieContainer);

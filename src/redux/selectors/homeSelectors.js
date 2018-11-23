@@ -16,9 +16,4 @@ export const getHeroImage = createSelector(
             ? homeMovies[0]
             : null
 );
-export const getUiState = state => state.ui;
 
-export const getLoading = createSelector(
-    getUiState,
-    ui => ui.loading
-);

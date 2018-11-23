@@ -22,7 +22,7 @@ const buildPopularUrl = (page = 1) =>
 const buildSearchUrl = (searchTerm, page) =>
     `${API_URL}search/movie?api_key=${API_KEY}&language=en-US&query=${searchTerm}&page=${page}`;
 
-const moviesMiddleware = () => next => action => {
+const moviesMiddleware = ({ dispatch }) => next => action => {
     next(action);
 
     switch (action.type) {
@@ -34,8 +34,8 @@ const moviesMiddleware = () => next => action => {
                 const home = JSON.parse(sessionStorage.getItem('HomeState'));
                 next(setPopularPersistedState(home));
             } else {
+                dispatch(clearMovies());
                 next([
-                    clearMovies(),
                     apiRequest({
                         method: 'GET',
                         url: buildPopularUrl(action.payload.page),
@@ -100,6 +100,8 @@ const moviesMiddleware = () => next => action => {
             break;
         case `${MOVIES} ${API_ERROR}`:
             next([setLoader({ state: false, feature: MOVIES })]);
+            break;
+        default:
             break;
     }
 };

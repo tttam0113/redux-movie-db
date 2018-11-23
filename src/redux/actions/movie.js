@@ -16,14 +16,16 @@ export const fetchMovie = ({ movieId }) => ({
     meta: { feature: MOVIE }
 });
 
-export const setMovie = ({ movie }) => ({
+export const setMovie = ({ data = {} } = {}) => ({
     type: SET_MOVIE,
-    payload: movie,
+    payload: data,
     meta: { feature: MOVIE }
 });
 
 export const clearMovie = () => ({
-    type: CLEAR_MOVIE
+    type: CLEAR_MOVIE,
+    payload: null,
+    meta: { feature: MOVIE }
 });
 
 export const setMoviePersistedState = state => ({
