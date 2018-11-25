@@ -16,11 +16,11 @@ describe('apiRequest', () => {
                 key1: 'value1',
                 key2: 'value2'
             },
-            feature: 'FEATURE'
+            feature: '[Feature]'
         });
 
         expect(action).toEqual({
-            type: `FEATURE ${API_REQUEST}`,
+            type: `[Feature] ${API_REQUEST}`,
             payload: {
                 key1: 'value1',
                 key2: 'value2'
@@ -43,7 +43,7 @@ describe('apiSuccess', () => {
                 key1: 'value1',
                 key2: 'value2'
             },
-            feature: 'FEATURE'
+            feature: '[Feature]'
         });
 
         expect(action).toEqual({
@@ -54,7 +54,7 @@ describe('apiSuccess', () => {
                     key1: 'value1',
                     key2: 'value2'
                 },
-                feature: 'FEATURE'
+                feature: '[Feature]'
             }
         });
     });
@@ -69,7 +69,7 @@ describe('apiError', () => {
                 key1: 'value1',
                 key2: 'value2'
             },
-            feature: 'FEATURE'
+            feature: '[Feature]'
         });
 
         expect(action).toEqual({
@@ -80,7 +80,7 @@ describe('apiError', () => {
                     key1: 'value1',
                     key2: 'value2'
                 },
-                feature: 'FEATURE'
+                feature: '[Feature]'
             }
         });
     });
