@@ -245,7 +245,7 @@ We have some cases to test this middleware:
 
 4. Should call request and dispatch error action if an exception occurred
     > **window.fetch()** is called
-    > **dispatch()** is called with success action API_ERROR
+    > **dispatch()** is called with error action API_ERROR
 
 Before each test case we will call mockMiddleware to get all needed spies:
 
