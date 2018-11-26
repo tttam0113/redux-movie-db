@@ -1,10 +1,20 @@
 vanila js middleware, not use third party library. 
 only using fetch, Promise in site effect
 
-how to test custom middleware
+I applied an advanced redux pattern which introduced by Nir Kaufman.
+You can find more detail in **[here](https://leanpub.com/thinking-in-Redux)**
 
+So how to test custom middleware? 
+How to create fetch, response for testing?
 
-create mockResponse 
+After googling and i found a document in **[Redux - Writing Tests](https://redux.js.org/recipes/writingtests)**
+and **[Unit testing with Jest: Redux + async actions + fetch](https://medium.com/@ferrannp/unit-testing-with-jest-redux-async-actions-fetch-9054ca28cdcd)**
+
+Now let's start testing.
+
+I'm going to write some helper methods to support testing.
+
+1. mockResponse to mock the fetch response
 
 ```javascript
 const mockResponse = (status, statusText, response) => {
@@ -20,16 +30,16 @@ const mockResponse = (status, statusText, response) => {
 export default mockResponse;
 ```
 
-create mockFetch
-In *tests/__mocks__/mockFetch*
+2. mockFetch to create a fake fetch and force it to return the response which i want to test
+
 ```javascript
 export default fn => {
     window.fetch = jest.fn().mockImplementation(fn);
 };
 ```
 
-create mockMiddleware - high order function
-In *tests/__mocks__/mockMiddleware*
+3. mockMiddleware to create some function spies for testing: getState, dispatch, next and invoke function to invoke an action
+
 ```javascript
 const create = (middleware) => () => {
     const store = {
@@ -45,20 +55,16 @@ const create = (middleware) => () => {
 export default create;
 ```
 
-async request => need await in several milliseconds
-In *tests/__mocks__/wait.js*
+4. A small util wrap setTimeout to wait response from async request => need await in several milliseconds
 ```javascript
 export default (fn, delay = 100) => {
     setTimeout(fn, delay);
 }
 ```
 
-I use an advanced redux pattern which introduced by Nir Kaufman.
-You can find more detail in here: https://leanpub.com/thinking-in-Redux
-
 #### Actions:
 
-An action is nothing more than a plain Javascript object that bundels data together.
+An action is nothing more than a plain Javascript object that bundles data together.
 
 I use same struct for all actions, just 3 fields: type, payload, meta. An action creator will be like this: 
 
@@ -139,7 +145,7 @@ describe('apiRequest', () => {
             meta: {
                 method: 'GET',
                 url: 'http://localhost:3000/api',
-                feature: 'FEATURE'
+                feature: '[Feature]'
             }
         });
     });
@@ -184,7 +190,7 @@ describe('apiError', () => {
         });
 
         expect(action).toEqual({
-            type: `FEATURE ${API_ERROR}`,
+            type: `[Feature] ${API_ERROR}`,
             payload: "Error Message",
             meta: {
                 data: {
@@ -200,10 +206,13 @@ describe('apiError', () => {
 
 #### Middleware
 There are 2 types middlewares: core and feature
-Core middleware process command actions and dispatch event actions to another middlwares.
-Features middleware process event actions and dispatch document actions to reducers;
+Core middlewares are repsonsible for processing  generic actions. It should not be aware of any enities or other kind of business logic related to data models and therefore can be used in different contexts and even in other applications. The core middleware never depend on any other middleware.
 
-Api middleware:
+Feature middlewares are responsible for implementing a specific flow. In most cases, a feature middleware will implement action routing patterns related to a specific feature without transforming the payload in any way. It cannot be reused in any other context. Like core middleware, the feature middleware never depend on other middleware
+
+The Api middleware is a core middleware reponsible for communicating with the server via HTTP API cals. it processes an API_REQUEST command action and dispatches and API_SUCCESS or API_ERROR event action, depending on the result of the call. 
+To keep our middleware generic, we will need to ignore the prefix in action type in order to identify the action type. So the apiMiddleware can be done as follows:
+
 ```javascript
 import { API_REQUEST, apiSuccess, apiError } from '../../actions/api';
 
@@ -222,8 +231,22 @@ const apiMiddleware = ({ dispatch }) => next => action => {
 
 export default apiMiddleware;
 ```
+We have some cases to test this middleware:
 
-This middleware need 2 spies function: dispatch and next
+1. Should pass through any action
+    > **next()** is called with action 
+
+2. Should call request when action include API_REQUEST 
+    > **window.fetch()** is called                        
+
+3. Should call request and dispatch success action if the fetch response was successful
+    > **window.fetch()** is called
+    > **dispatch()** is called with success action API_SUCCESS
+
+4. Should call request and dispatch error action if an exception occurred
+    > **window.fetch()** is called
+    > **dispatch()** is called with success action API_ERROR
+
 Before each test case we will call mockMiddleware to get all needed spies:
 
 ```javascript 
@@ -241,7 +264,6 @@ beforeEach(() => {
 ```
 
 First test case is simple, it just check any action object will be passed through middleware.
-
 ```javascript
 it('should pass through any action object', () => {
     const action = { type: 'TEST' };
@@ -252,9 +274,83 @@ it('should pass through any action object', () => {
 });
 ```
 
+Second test case, a fetch is called. We can implement like this:
+```javascript
+it('Should call request when action include API_REQUEST', () => {
+    const action = {
+        type: '[Test] API_REQUEST',
+        payload: null,
+        meta: { url: '', method: 'GET', feature: '[Test]' }
+    };
+    mockFetch(() => Promise.resolve());
 
+    invoke(action);
 
-Can be tested like: 
+    expect(window.fetch).toBeCalled();
+});
+```
+
+Third case, we create a successful response and we know the form of success action. So the implementation can be like: 
+```javascript
+it('should calls request and dispatch success action if the fetch response was successful', done => {
+    const response = '{ "id": "respid" }';
+    mockFetch(() => Promise.resolve(mockResponse(200, null, response)));
+
+    const action = {
+        type: `[Feature] ${API_REQUEST}`,
+        payload: { id: 123 },
+        meta: { url: '', method: 'GET', feature: '[Feature]' }
+    };
+
+    invoke(action);
+
+    const successAction = {
+        type: `[Feature] ${API_SUCCESS}`,
+        payload: JSON.parse(response),
+        meta: { data: { id: 123 }, feature: '[Feature]' }
+    };
+
+    expect(window.fetch).toBeCalled();
+
+    wait(() => {
+        expect(dispatch).toHaveBeenCalledWith(successAction);
+        done();
+    });
+});
+```
+In this test case we need a small delay to get response so wait() util is called.
+
+Fourth test case is similar to third case. Instead of successful action we will create an exception and wait for error action is dispatched.
+```javascript
+it('should calls request and dispatch error action if an exception occured', done => {
+    const response = 'Wrong JSON syntax';
+    mockFetch(() => Promise.resolve(mockResponse(200, 'OK', response)));
+
+    const action = {
+        type: `[Feature] ${API_REQUEST}`,
+        payload: { id: 123 },
+        meta: { url: '', method: 'GET', feature: '[Feature]' }
+    };
+
+    invoke(action);
+
+    const errorAction = {
+        type: `[Feature] ${API_ERROR}`,
+        payload: expect.any(Error),
+        meta: { data: { id: 123 }, feature: '[Feature]' }
+    };
+
+    expect(window.fetch).toBeCalled();
+
+    wait(() => {
+        expect(dispatch).toHaveBeenCalledWith(errorAction);
+
+        done();
+    });
+});
+```
+That's all for api testing. Full implementation:
+
 ```javascript
 import apiMiddleware from '../api';
 import { API_REQUEST, API_SUCCESS, API_ERROR } from 'redux/actions/api';
@@ -280,6 +376,19 @@ it('should pass through any action object', () => {
     invoke(action);
 
     expect(next).toBeCalledWith(action);
+});
+
+it('Should call request when action include API_REQUEST', () => {
+    const action = {
+        type: '[Test] API_REQUEST',
+        payload: null,
+        meta: { url: '', method: 'GET', feature: '[Test]' }
+    };
+    mockFetch(() => Promise.resolve());
+
+    invoke(action);
+
+    expect(window.fetch).toBeCalled();
 });
 
 it('should calls request and dispatch success action if the fetch response was successful', done => {
@@ -309,7 +418,7 @@ it('should calls request and dispatch success action if the fetch response was s
 });
 
 it('should calls request and dispatch error action if an exception occured', done => {
-    const response = "Wrong JSON syntax";
+    const response = 'Wrong JSON syntax';
     mockFetch(() => Promise.resolve(mockResponse(200, 'OK', response)));
 
     const action = {
@@ -330,7 +439,7 @@ it('should calls request and dispatch error action if an exception occured', don
 
     wait(() => {
         expect(dispatch).toHaveBeenCalledWith(errorAction);
-        
+
         done();
     });
 });

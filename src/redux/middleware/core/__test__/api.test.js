@@ -24,6 +24,19 @@ it('should pass through any action object', () => {
     expect(next).toBeCalledWith(action);
 });
 
+it('Should call request when action include API_REQUEST', () => {
+    const action = {
+        type: '[Test] API_REQUEST',
+        payload: null,
+        meta: { url: '', method: 'GET', feature: '[Test]' }
+    };
+    mockFetch(() => Promise.resolve());
+
+    invoke(action);
+
+    expect(window.fetch).toBeCalled();
+});
+
 it('should calls request and dispatch success action if the fetch response was successful', done => {
     const response = '{ "id": "respid" }';
     mockFetch(() => Promise.resolve(mockResponse(200, null, response)));
@@ -51,7 +64,7 @@ it('should calls request and dispatch success action if the fetch response was s
 });
 
 it('should calls request and dispatch error action if an exception occured', done => {
-    const response = "Wrong JSON syntax";
+    const response = 'Wrong JSON syntax';
     mockFetch(() => Promise.resolve(mockResponse(200, 'OK', response)));
 
     const action = {
@@ -72,7 +85,7 @@ it('should calls request and dispatch error action if an exception occured', don
 
     wait(() => {
         expect(dispatch).toHaveBeenCalledWith(errorAction);
-        
+
         done();
     });
 });
