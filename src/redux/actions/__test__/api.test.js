@@ -5,7 +5,7 @@ import {
     apiRequest,
     apiError,
     apiSuccess
-} from '../api';
+} from 'redux/actions/api';
 
 describe('apiRequest', () => {
     it('should generate apiRequest action object', () => {
@@ -28,7 +28,7 @@ describe('apiRequest', () => {
             meta: {
                 method: 'GET',
                 url: 'http://localhost:3000/api',
-                feature: 'FEATURE'
+                feature: '[Feature]'
             }
         });
     });
@@ -47,7 +47,7 @@ describe('apiSuccess', () => {
         });
 
         expect(action).toEqual({
-            type: `FEATURE ${API_SUCCESS}`,
+            type: `[Feature] ${API_SUCCESS}`,
             payload: response,
             meta: {
                 data: {
@@ -73,7 +73,7 @@ describe('apiError', () => {
         });
 
         expect(action).toEqual({
-            type: `FEATURE ${API_ERROR}`,
+            type: `[Feature] ${API_ERROR}`,
             payload: "Error Message",
             meta: {
                 data: {

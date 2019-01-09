@@ -1,10 +1,9 @@
-vanila js middleware, not use third party library. 
-only using fetch, Promise in site effect
+#Unit testing custom middleware for fetching request in Redux
 
 I applied an advanced redux pattern which introduced by Nir Kaufman.
 You can find more detail in **[here](https://leanpub.com/thinking-in-Redux)**
 
-So how to test custom middleware? 
+So how to test custom middleware?
 How to create fetch, response for testing?
 
 After googling and i found a document in **[Redux - Writing Tests](https://redux.js.org/recipes/writingtests)**
@@ -41,7 +40,7 @@ export default fn => {
 3. mockMiddleware to create some function spies for testing: getState, dispatch, next and invoke function to invoke an action
 
 ```javascript
-const create = (middleware) => () => {
+const create = middleware => () => {
     const store = {
         getState: jest.fn(() => ({})),
         dispatch: jest.fn()
@@ -56,37 +55,41 @@ export default create;
 ```
 
 4. A small util wrap setTimeout to wait response from async request => need await in several milliseconds
+
 ```javascript
 export default (fn, delay = 100) => {
     setTimeout(fn, delay);
-}
+};
 ```
 
 #### Actions:
 
 An action is nothing more than a plain Javascript object that bundles data together.
 
-I use same struct for all actions, just 3 fields: type, payload, meta. An action creator will be like this: 
+I use same struct for all actions, just 3 fields: type, payload, meta. An action creator will be like this:
 
 ```javascript
 export const API_REQUEST = 'API_REQUEST';
-export const apiRequest = ({method, url, data, feature}) => ({
+export const apiRequest = ({ method, url, data, feature }) => ({
     type: `${feature} ${API_REQUEST}`,
     payload: data,
     meta: {
-        method, url, feature
-    } 
+        method,
+        url,
+        feature
+    }
 });
 ```
+
 api actions is reused in many cases so feature is needed to distinguish what feature is making request api.
 
-Full feature actions: 
+Full api actions:
 
 ```javascript
 // action types
-export const API_REQUEST = 'API_REQUEST';   // command action
-export const API_SUCCESS = 'API_SUCCESS';   // event action
-export const API_ERROR = 'API_ERROR';       // event action
+export const API_REQUEST = 'API_REQUEST'; // command action
+export const API_SUCCESS = 'API_SUCCESS'; // event action
+export const API_ERROR = 'API_ERROR'; // event action
 
 // action creators
 export const apiRequest = ({ method, url, data, feature }) => ({
@@ -112,7 +115,7 @@ export const apiError = ({ error, data, feature }) => ({
 });
 ```
 
-Actions can be tested like: 
+Actions can be tested like:
 
 ```javascript
 import {
@@ -153,7 +156,7 @@ describe('apiRequest', () => {
 
 describe('apiSuccess', () => {
     it('should generate apiSuccess action object', () => {
-        const response = { id: '123' }
+        const response = { id: '123' };
         const action = apiSuccess({
             response,
             data: {
@@ -179,7 +182,7 @@ describe('apiSuccess', () => {
 
 describe('apiError', () => {
     it('should generate apiError action object', () => {
-        const error = "Error Message"
+        const error = 'Error Message';
         const action = apiError({
             error,
             data: {
@@ -191,7 +194,7 @@ describe('apiError', () => {
 
         expect(action).toEqual({
             type: `[Feature] ${API_ERROR}`,
-            payload: "Error Message",
+            payload: 'Error Message',
             meta: {
                 data: {
                     key1: 'value1',
@@ -205,12 +208,13 @@ describe('apiError', () => {
 ```
 
 #### Middleware
+
 There are 2 types middlewares: core and feature
-Core middlewares are repsonsible for processing  generic actions. It should not be aware of any enities or other kind of business logic related to data models and therefore can be used in different contexts and even in other applications. The core middleware never depend on any other middleware.
+Core middlewares are repsonsible for processing generic actions. It should not be aware of any enities or other kind of business logic related to data models and therefore can be used in different contexts and even in other applications. The core middleware never depend on any other middleware.
 
 Feature middlewares are responsible for implementing a specific flow. In most cases, a feature middleware will implement action routing patterns related to a specific feature without transforming the payload in any way. It cannot be reused in any other context. Like core middleware, the feature middleware never depend on other middleware
 
-The Api middleware is a core middleware reponsible for communicating with the server via HTTP API cals. it processes an API_REQUEST command action and dispatches and API_SUCCESS or API_ERROR event action, depending on the result of the call. 
+The Api middleware is a core middleware reponsible for communicating with the server via HTTP API cals. it processes an API_REQUEST command action and dispatches and API_SUCCESS or API_ERROR event action, depending on the result of the call.
 To keep our middleware generic, we will need to ignore the prefix in action type in order to identify the action type. So the apiMiddleware can be done as follows:
 
 ```javascript
@@ -231,15 +235,19 @@ const apiMiddleware = ({ dispatch }) => next => action => {
 
 export default apiMiddleware;
 ```
+
 We have some cases to test this middleware:
 
 1. Should pass through any action
-    > **next()** is called with action 
 
-2. Should call request when action include API_REQUEST 
-    > **window.fetch()** is called                        
+    > **next()** is called with action
+
+2. Should call request when action include API_REQUEST
+
+    > **window.fetch()** is called
 
 3. Should call request and dispatch success action if the fetch response was successful
+
     > **window.fetch()** is called
     > **dispatch()** is called with success action API_SUCCESS
 
@@ -249,7 +257,7 @@ We have some cases to test this middleware:
 
 Before each test case we will call mockMiddleware to get all needed spies:
 
-```javascript 
+```javascript
 import apiMiddleware from '../api';
 import mockMiddleware from 'tests/__mocks__/mockMiddleware';
 const create = mockMiddleware(apiMiddleware);
@@ -264,6 +272,7 @@ beforeEach(() => {
 ```
 
 First test case is simple, it just check any action object will be passed through middleware.
+
 ```javascript
 it('should pass through any action object', () => {
     const action = { type: 'TEST' };
@@ -275,6 +284,7 @@ it('should pass through any action object', () => {
 ```
 
 Second test case, a fetch is called. We can implement like this:
+
 ```javascript
 it('Should call request when action include API_REQUEST', () => {
     const action = {
@@ -290,7 +300,8 @@ it('Should call request when action include API_REQUEST', () => {
 });
 ```
 
-Third case, we create a successful response and we know the form of success action. So the implementation can be like: 
+Third case, we create a successful response and we know the form of success action. So the implementation can be like:
+
 ```javascript
 it('should calls request and dispatch success action if the fetch response was successful', done => {
     const response = '{ "id": "respid" }';
@@ -318,9 +329,11 @@ it('should calls request and dispatch success action if the fetch response was s
     });
 });
 ```
+
 In this test case we need a small delay to get response so wait() util is called.
 
 Fourth test case is similar to third case. Instead of successful action we will create an exception and wait for error action is dispatched.
+
 ```javascript
 it('should calls request and dispatch error action if an exception occured', done => {
     const response = 'Wrong JSON syntax';
@@ -349,6 +362,7 @@ it('should calls request and dispatch error action if an exception occured', don
     });
 });
 ```
+
 That's all for api testing. Full implementation:
 
 ```javascript
@@ -444,4 +458,3 @@ it('should calls request and dispatch error action if an exception occured', don
     });
 });
 ```
-
