@@ -12,42 +12,42 @@ export const SET_POPULAR_PERSISTED_STATE = `${MOVIES} SET_POPULAR_PERSISTED_STAT
 
 // action creator
 export const fetchPopularMovies = ({ page = 1 }) => ({
-    type: FETCH_POPULAR_MOVIES,
-    payload: { page },
-    meta: { feature: MOVIES }
+  type: FETCH_POPULAR_MOVIES,
+  payload: { page },
+  meta: { feature: MOVIES },
 });
 
 export const searchMovies = ({ searchTerm }) => ({
-    type: SEARCH_MOVIES,
-    payload: { searchTerm },
-    meta: { feature: MOVIES }
+  type: SEARCH_MOVIES,
+  payload: { searchTerm },
+  meta: { feature: MOVIES },
 });
 
 export const loadMoreMovies = ({ searchTerm, currentPage }) => ({
-    type: LOAD_MORE_MOVIES,
-    payload: { searchTerm, currentPage },
-    meta: { feature: MORE_MOVIES }
+  type: LOAD_MORE_MOVIES,
+  payload: { searchTerm, currentPage },
+  meta: { feature: MORE_MOVIES },
 });
 
 export const clearMovies = () => ({
-    type: CLEAR_MOVIES,
-    payload: null,
-    meta: { feature: MOVIES }
+  type: CLEAR_MOVIES,
+  payload: null,
+  meta: { feature: MOVIES },
 });
 
 export const setMovies = ({ data }) => ({
-    type: SET_MOVIES,
-    payload: data,
-    meta: { feature: MOVIES }
+  type: SET_MOVIES,
+  payload: data,
+  meta: { feature: MOVIES },
 });
 
 export const setMoreMovies = ({ data }) => ({
-    type: SET_MORE_MOVIES,
-    payload: data,
-    meta: { feature: MORE_MOVIES }
+  type: SET_MORE_MOVIES,
+  payload: data,
+  meta: { feature: MORE_MOVIES },
 });
 
 export const setPopularPersistedState = homeState => ({
-    type: SET_POPULAR_PERSISTED_STATE,
-    payload: homeState
+  type: SET_POPULAR_PERSISTED_STATE,
+  payload: homeState,
 });

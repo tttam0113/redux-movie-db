@@ -5,10 +5,10 @@
   height: 600px;
   padding: 40px 20px;
   box-sizing: border-box;
-  animation: animateMovieinfo 1s;
+  animation: animateMovieInfo 1s;
 }
 
-@keyframes animateMovieinfo {
+@keyframes animateMovieInfo {
   from {
       opacity:0;
   }
